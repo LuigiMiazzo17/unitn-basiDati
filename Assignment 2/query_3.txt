@@ -1,0 +1,12 @@
+SELECT DISTINCT title, year, 'most profitable' AS feature
+FROM movies
+WHERE gross - budget = 
+(SELECT MAX(gross-budget)			 
+FROM movies)		 
+UNION
+SELECT DISTINCT title, year, 'least expensive' AS feature 
+FROM movies
+WHERE budget = 
+(SELECT MIN(budget)
+FROM movies)		
+ORDER BY title, year, feature;

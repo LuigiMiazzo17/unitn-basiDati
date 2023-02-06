@@ -1,0 +1,20 @@
+WITH 
+	winners AS (
+		SELECT d.director, d.yearofbirth
+		FROM directors AS d INNER JOIN directorawards AS ds ON d.director = ds.director
+		WHERE ds.award = 'oscar' AND ds.result = 'won'
+		UNION ALL
+		SELECT d.director, d.yearofbirth
+		FROM directors AS d INNER JOIN movies AS mo ON d.director = mo.director
+		INNER JOIN movieawards AS ms ON mo.title = ms.title AND mo.year = ms.year
+		WHERE ms.result = 'won' AND ms.award = 'oscar, best director'
+	)
+SELECT DISTINCT winners.director, 'youngest' AS feature
+FROM winners
+WHERE winners.yearofbirth = (SELECT MAX(winners.yearofbirth) FROM winners)
+UNION
+SELECT DISTINCT winners.director, 'oldest' AS feature
+FROM winners
+WHERE winners.yearofbirth = (SELECT MIN(winners.yearofbirth) FROM winners)
+
+ORDER BY director, feature;

@@ -1,0 +1,10 @@
+SELECT 
+	D.director,
+	COALESCE(MIN(gross - budget),-1) AS minimo, 
+	COALESCE(MAX(gross - budget), -1) AS massimo, 
+	COALESCE(TRUNC(AVG(gross - budget), 2),-1) AS average
+FROM DIRECTORS AS D LEFT JOIN MOVIES AS Mo ON 
+	D.director = Mo.director
+WHERE date_part('year', NOW()) - D.yearofbirth > 50
+GROUP BY D.director
+ORDER BY D.director, minimo, massimo, average;

@@ -1,0 +1,4 @@
+SELECT DISTINCT director
+FROM movies AS m INNER JOIN movieawards AS ms ON m.title = ms.title AND m.year = ms.year
+WHERE award LIKE '%best director' AND result = 'won' AND (gross-budget) <= 0
+ORDER BY director;

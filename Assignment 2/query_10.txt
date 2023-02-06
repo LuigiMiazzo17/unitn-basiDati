@@ -1,0 +1,26 @@
+WITH
+	Spilberg_movies AS (
+		SELECT m.title, m.year, COUNT(ms.award) AS totale
+		FROM movies AS m INNER JOIN movieawards AS ms ON m.title = ms.title AND m.year = ms.year
+		WHERE director LIKE 'Spielberg' AND ms.result = 'won'
+		GROUP BY m.title, m.year
+		HAVING COUNT(*) >= 3  
+	),
+	best_director AS (
+		SELECT director, year
+		FROM directorawards
+		WHERE result = 'won'
+		UNION DISTINCT
+		SELECT m.director, m.year
+		FROM movies AS m INNER JOIN movieawards AS ms ON ms.title = m.title AND ms.year = m.year
+		WHERE ms.award LIKE '%best director' AND ms.result = 'won'
+	),
+	not_countable AS (
+		SELECT *
+		FROM (SELECT director FROM best_director) AS d CROSS JOIN (SELECT year FROM Spilberg_movies) AS y
+		EXCEPT (SELECT * FROM best_director)
+	)
+SELECT DISTINCT director
+FROM best_director
+WHERE EXISTS(SELECT * FROM Spilberg_movies) AND director NOT IN (SELECT director FROM not_countable)
+ORDER BY director;
